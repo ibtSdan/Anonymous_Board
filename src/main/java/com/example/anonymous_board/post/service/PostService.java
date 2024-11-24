@@ -4,6 +4,7 @@ import com.example.anonymous_board.post.db.PostEntity;
 import com.example.anonymous_board.post.db.PostRepository;
 import com.example.anonymous_board.post.model.PostDto;
 import com.example.anonymous_board.post.model.PostRequest;
+import com.example.anonymous_board.post.model.PostUpdate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +42,30 @@ public class PostService {
     public List<PostDto> all() {
         return postRepository.findAll().stream()
                 .map(postConverter::toDto).toList();
+    }
+
+
+    public PostDto update(PostUpdate postUpdate) {
+        // 비밀번호 확인 및 게시글 존재 확인
+        var entity =postRepository.findById(postUpdate.getId())
+                .map( it -> {
+                    // 존재한다면?
+                    if(!it.getPassword().equals(postUpdate.getPassword())){
+                        throw new RuntimeException("비밀번호가 다릅니다.");
+                    }
+                    return it;
+                }).orElseThrow( () -> {
+                    return new RuntimeException("해당 게시글이 존재하지 않습니다.");
+                });
+        if(entity.getTitle().equals(postUpdate.getTitle()) && entity.getContent().equals(postUpdate.getContent())){
+            throw new RuntimeException("수정된 내용이 존재하지 않습니다.");
+        }
+
+        // 업데이트 후 저장
+        entity.setTitle(postUpdate.getTitle());
+        entity.setContent(postUpdate.getContent());
+        entity.setPostedAt(LocalDateTime.now());
+        var newPost = postRepository.save(entity);
+        return postConverter.toDto(newPost);
     }
 }

@@ -2,6 +2,7 @@ package com.example.anonymous_board.post.controller;
 
 import com.example.anonymous_board.post.model.PostDto;
 import com.example.anonymous_board.post.model.PostRequest;
+import com.example.anonymous_board.post.model.PostUpdate;
 import com.example.anonymous_board.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,11 @@ public class PostApiController {
     @GetMapping("/all")
     public List<PostDto> all(){
         return postService.all();
+    }
+
+    // 수정
+    @PostMapping("/update")
+    public PostDto create(@Valid @RequestBody PostUpdate postUpdate){
+        return postService.update(postUpdate);
     }
 }
