@@ -2,6 +2,7 @@ package com.example.anonymous_board.post.service;
 
 import com.example.anonymous_board.post.db.PostEntity;
 import com.example.anonymous_board.post.db.PostRepository;
+import com.example.anonymous_board.post.model.PostDelete;
 import com.example.anonymous_board.post.model.PostDto;
 import com.example.anonymous_board.post.model.PostRequest;
 import com.example.anonymous_board.post.model.PostUpdate;
@@ -67,5 +68,18 @@ public class PostService {
         entity.setPostedAt(LocalDateTime.now());
         var newPost = postRepository.save(entity);
         return postConverter.toDto(newPost);
+    }
+
+    public void delete(PostDelete postDelete) {
+        postRepository.findById(postDelete.getId())
+                .map( it -> {
+                    if(!it.getPassword().equals(postDelete.getPassword())){
+                        throw new RuntimeException("비밀번호가 다릅니다.");
+                    }
+                    postRepository.delete(it);
+                    return "";
+                }).orElseThrow( () -> {
+                    return new RuntimeException("해당 게시글이 존재하지 않습니다.");
+                });
     }
 }

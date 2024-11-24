@@ -1,5 +1,6 @@
 package com.example.anonymous_board.post.controller;
 
+import com.example.anonymous_board.post.model.PostDelete;
 import com.example.anonymous_board.post.model.PostDto;
 import com.example.anonymous_board.post.model.PostRequest;
 import com.example.anonymous_board.post.model.PostUpdate;
@@ -39,5 +40,11 @@ public class PostApiController {
     @PostMapping("/update")
     public PostDto create(@Valid @RequestBody PostUpdate postUpdate){
         return postService.update(postUpdate);
+    }
+
+    // 삭제
+    @PostMapping("/delete")
+    public void delete(@Valid @RequestBody PostDelete postDelete){
+        postService.delete(postDelete);
     }
 }
