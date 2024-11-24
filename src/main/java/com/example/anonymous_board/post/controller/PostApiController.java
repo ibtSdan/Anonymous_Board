@@ -1,5 +1,6 @@
 package com.example.anonymous_board.post.controller;
 
+import com.example.anonymous_board.post.common.ApiPagination;
 import com.example.anonymous_board.post.model.PostDelete;
 import com.example.anonymous_board.post.model.PostDto;
 import com.example.anonymous_board.post.model.PostRequest;
@@ -7,6 +8,9 @@ import com.example.anonymous_board.post.model.PostUpdate;
 import com.example.anonymous_board.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +36,10 @@ public class PostApiController {
 
     // 전체 글 조회
     @GetMapping("/all")
-    public List<PostDto> all(){
-        return postService.all();
+    public ApiPagination<List<PostDto>> all(
+            @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)Pageable pageable
+            ){
+        return postService.all(pageable);
     }
 
     // 수정

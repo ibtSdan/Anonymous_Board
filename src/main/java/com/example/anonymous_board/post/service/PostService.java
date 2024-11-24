@@ -1,5 +1,7 @@
 package com.example.anonymous_board.post.service;
 
+import com.example.anonymous_board.post.common.ApiPagination;
+import com.example.anonymous_board.post.common.Pagination;
 import com.example.anonymous_board.post.db.PostEntity;
 import com.example.anonymous_board.post.db.PostRepository;
 import com.example.anonymous_board.post.model.PostDelete;
@@ -7,6 +9,7 @@ import com.example.anonymous_board.post.model.PostDto;
 import com.example.anonymous_board.post.model.PostRequest;
 import com.example.anonymous_board.post.model.PostUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,9 +43,20 @@ public class PostService {
         return postConverter.toDto(postEntity);
     }
 
-    public List<PostDto> all() {
-        return postRepository.findAll().stream()
-                .map(postConverter::toDto).toList();
+    public ApiPagination<List<PostDto>> all(Pageable pageable) {
+        var list = postRepository.findAll(pageable);
+        var pagination = Pagination.builder()
+                .page(list.getNumber())
+                .size(list.getSize())
+                .currentElements(list.getNumberOfElements())
+                .totalPage(list.getTotalPages())
+                .totalElements(list.getTotalElements())
+                .build();
+        return ApiPagination.<List<PostDto>>builder()
+                .body(list.toList().stream()
+                        .map(postConverter::toDto).toList())
+                .pagination(pagination)
+                .build();
     }
 
 
