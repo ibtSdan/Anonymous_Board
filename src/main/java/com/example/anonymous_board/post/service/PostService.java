@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +28,18 @@ public class PostService {
                 .build();
         var saveEntity = postRepository.save(entity);
         return postConverter.toDto(saveEntity);
+    }
+
+    public PostDto view(Long id) {
+        PostEntity postEntity = postRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new RuntimeException("해당 글이 존재하지 않습니다.");
+                });
+        return postConverter.toDto(postEntity);
+    }
+
+    public List<PostDto> all() {
+        return postRepository.findAll().stream()
+                .map(postConverter::toDto).toList();
     }
 }

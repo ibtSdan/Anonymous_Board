@@ -5,10 +5,9 @@ import com.example.anonymous_board.post.model.PostRequest;
 import com.example.anonymous_board.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -21,5 +20,17 @@ public class PostApiController {
     @PostMapping("/create")
     public PostDto create(@Valid @RequestBody PostRequest postRequest){
         return postService.create(postRequest);
+    }
+
+    // 조회
+    @GetMapping("/{id}")
+    public PostDto view(@PathVariable Long id){
+        return postService.view(id);
+    }
+
+    // 전체 글 조회
+    @GetMapping("/all")
+    public List<PostDto> all(){
+        return postService.all();
     }
 }
