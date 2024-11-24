@@ -1,5 +1,6 @@
 package com.example.anonymous_board.reply.controller;
 
+import com.example.anonymous_board.reply.model.ReplyDelete;
 import com.example.anonymous_board.reply.model.ReplyDto;
 import com.example.anonymous_board.reply.model.ReplyRequest;
 import com.example.anonymous_board.reply.model.ReplyUpdate;
@@ -30,5 +31,9 @@ public class ReplyApiController {
     }
 
     // 삭제
+    @PostMapping("/delete")
+    public void delete(@Valid @RequestBody ReplyDelete replyDelete){
+        replyService.delete(replyDelete);
+    }
 
 }

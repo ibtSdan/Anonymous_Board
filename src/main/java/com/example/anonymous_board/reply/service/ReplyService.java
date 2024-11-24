@@ -3,6 +3,7 @@ package com.example.anonymous_board.reply.service;
 import com.example.anonymous_board.post.db.PostRepository;
 import com.example.anonymous_board.reply.db.ReplyEntity;
 import com.example.anonymous_board.reply.db.ReplyRepository;
+import com.example.anonymous_board.reply.model.ReplyDelete;
 import com.example.anonymous_board.reply.model.ReplyDto;
 import com.example.anonymous_board.reply.model.ReplyRequest;
 import com.example.anonymous_board.reply.model.ReplyUpdate;
@@ -51,5 +52,19 @@ public class ReplyService {
         entity.setContent(replyUpdate.getContent());
         entity.setRepliedAt(LocalDateTime.now());
         return replyConverter.toDto(replyRepository.save(entity));
+    }
+
+    public void delete(ReplyDelete replyDelete) {
+        var entity = replyRepository.findById(replyDelete.getReplyId())
+                .map( it -> {
+                    if(!it.getPassword().equals(replyDelete.getPassword())){
+                        throw new RuntimeException("비밀번호가 다릅니다.");
+                    }
+                    replyRepository.delete(it);
+                    return "";
+                })
+                .orElseThrow( () -> {
+                    return new RuntimeException("존재하지 않는 댓글 번호 입니다.");
+                });
     }
 }
