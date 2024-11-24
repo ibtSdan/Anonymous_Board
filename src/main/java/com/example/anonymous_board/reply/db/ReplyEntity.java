@@ -20,7 +20,7 @@ public class ReplyEntity {
     @ManyToOne
     @JsonIgnore
     @ToString.Exclude
-    private PostEntity postEntity;
+    private PostEntity post;
 
     private String userName;
     private String password;
