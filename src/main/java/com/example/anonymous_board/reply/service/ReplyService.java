@@ -1,6 +1,7 @@
 package com.example.anonymous_board.reply.service;
 
 import com.example.anonymous_board.exception.InvalidCredentialsException;
+import com.example.anonymous_board.exception.NoChangesException;
 import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.post.db.PostRepository;
 import com.example.anonymous_board.reply.db.ReplyEntity;
@@ -56,7 +57,7 @@ public class ReplyService {
                     return new NoSuchElementException("존재하지 않는 댓글 번호 입니다. id = "+replyUpdate.getReplyId());
                 });
         if(entity.getContent().equals(replyUpdate.getContent())){
-            throw new RuntimeException("수정된 내용이 없습니다.");
+            throw new NoChangesException("수정된 내용이 없습니다.");
         }
         entity.setContent(replyUpdate.getContent());
         entity.setRepliedAt(LocalDateTime.now());

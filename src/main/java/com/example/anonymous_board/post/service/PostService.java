@@ -1,6 +1,7 @@
 package com.example.anonymous_board.post.service;
 
 import com.example.anonymous_board.exception.InvalidCredentialsException;
+import com.example.anonymous_board.exception.NoChangesException;
 import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.post.common.ApiPagination;
 import com.example.anonymous_board.post.common.Pagination;
@@ -92,7 +93,7 @@ public class PostService {
                     return new NoSuchElementException("해당 게시글이 존재하지 않습니다. id = "+postUpdate.getId());
                 });
         if(entity.getTitle().equals(postUpdate.getTitle()) && entity.getContent().equals(postUpdate.getContent())){
-            throw new RuntimeException("수정된 내용이 존재하지 않습니다.");
+            throw new NoChangesException("수정된 내용이 존재하지 않습니다.");
         }
 
         // 업데이트 후 저장
