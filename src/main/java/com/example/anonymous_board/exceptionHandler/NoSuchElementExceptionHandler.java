@@ -1,4 +1,4 @@
-package com.example.anonymous_board.exception;
+package com.example.anonymous_board.exceptionHandler;
 
 import com.example.anonymous_board.post.common.Api;
 import lombok.extern.slf4j.Slf4j;

@@ -1,5 +1,6 @@
 package com.example.anonymous_board.post.service;
 
+import com.example.anonymous_board.exception.InvalidCredentialsException;
 import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.post.common.ApiPagination;
 import com.example.anonymous_board.post.common.Pagination;
@@ -83,7 +84,7 @@ public class PostService {
                 .map( it -> {
                     // 존재한다면?
                     if(!it.getPassword().equals(postUpdate.getPassword())){
-                        throw new RuntimeException("비밀번호가 다릅니다.");
+                        throw new InvalidCredentialsException("비밀번호가 다릅니다.");
                     }
                     return it;
                 })
@@ -111,7 +112,7 @@ public class PostService {
         postRepository.findById(postDelete.getId())
                 .map( it -> {
                     if(!it.getPassword().equals(postDelete.getPassword())){
-                        throw new RuntimeException("비밀번호가 다릅니다.");
+                        throw new InvalidCredentialsException("비밀번호가 다릅니다.");
                     }
                     postRepository.delete(it);
                     return "";

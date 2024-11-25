@@ -1,5 +1,6 @@
 package com.example.anonymous_board.reply.service;
 
+import com.example.anonymous_board.exception.InvalidCredentialsException;
 import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.post.db.PostRepository;
 import com.example.anonymous_board.reply.db.ReplyEntity;
@@ -47,7 +48,7 @@ public class ReplyService {
         var entity = replyRepository.findById(replyUpdate.getReplyId())
                 .map( it -> {
                     if(!it.getPassword().equals(replyUpdate.getPassword())){
-                        throw new RuntimeException("비밀번호가 다릅니다.");
+                        throw new InvalidCredentialsException("비밀번호가 다릅니다.");
                     }
                     return it;
                 })
@@ -71,7 +72,7 @@ public class ReplyService {
         var entity = replyRepository.findById(replyDelete.getReplyId())
                 .map( it -> {
                     if(!it.getPassword().equals(replyDelete.getPassword())){
-                        throw new RuntimeException("비밀번호가 다릅니다.");
+                        throw new InvalidCredentialsException("비밀번호가 다릅니다.");
                     }
                     replyRepository.delete(it);
                     return "";

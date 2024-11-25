@@ -1,4 +1,4 @@
-package com.example.anonymous_board.exception;
+package com.example.anonymous_board.exceptionHandler;
 
 import com.example.anonymous_board.post.common.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
