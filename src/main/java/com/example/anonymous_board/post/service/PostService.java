@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class PostService {
     public Api<PostDto> view(Long id) {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> {
-                    return new RuntimeException("해당 글이 존재하지 않습니다.");
+                    return new NoSuchElementException("해당 게시글이 존재하지 않습니다. id = "+id);
                 });
         var dto = postConverter.toDto(postEntity);
         return Api.<PostDto>builder()
@@ -85,8 +86,9 @@ public class PostService {
                         throw new RuntimeException("비밀번호가 다릅니다.");
                     }
                     return it;
-                }).orElseThrow( () -> {
-                    return new RuntimeException("해당 게시글이 존재하지 않습니다.");
+                })
+                .orElseThrow( () -> {
+                    return new NoSuchElementException("해당 게시글이 존재하지 않습니다. id = "+postUpdate.getId());
                 });
         if(entity.getTitle().equals(postUpdate.getTitle()) && entity.getContent().equals(postUpdate.getContent())){
             throw new RuntimeException("수정된 내용이 존재하지 않습니다.");
@@ -113,8 +115,9 @@ public class PostService {
                     }
                     postRepository.delete(it);
                     return "";
-                }).orElseThrow( () -> {
-                    return new RuntimeException("해당 게시글이 존재하지 않습니다.");
+                })
+                .orElseThrow( () -> {
+                    return new NoSuchElementException("해당 게시글이 존재하지 않습니다. id = "+postDelete.getId());
                 });
         return Api.<String>builder()
                 .resultCode(String.valueOf(HttpStatus.OK.value()))

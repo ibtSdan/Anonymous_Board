@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class ReplyService {
     public Api<ReplyDto> create(ReplyRequest replyRequest) {
         var post = postRepository.findById(replyRequest.getPostId())
                 .orElseThrow( () -> {
-                    return new RuntimeException("존재하지 않는 글번호 입니다.");
+                    return new NoSuchElementException("존재하지 않는 글번호 입니다. id = "+replyRequest.getPostId());
                 });
         var entity = ReplyEntity.builder()
                 .userName(replyRequest.getUserName())
@@ -51,7 +52,7 @@ public class ReplyService {
                     return it;
                 })
                 .orElseThrow( () -> {
-                    return new RuntimeException("존재하지 않는 댓글 번호 입니다.");
+                    return new NoSuchElementException("존재하지 않는 댓글 번호 입니다. id = "+replyUpdate.getReplyId());
                 });
         if(entity.getContent().equals(replyUpdate.getContent())){
             throw new RuntimeException("수정된 내용이 없습니다.");
@@ -76,7 +77,7 @@ public class ReplyService {
                     return "";
                 })
                 .orElseThrow( () -> {
-                    return new RuntimeException("존재하지 않는 댓글 번호 입니다.");
+                    return new NoSuchElementException("존재하지 않는 댓글 번호 입니다. id = "+replyDelete.getReplyId());
                 });
         return Api.<String>builder()
                 .resultCode(String.valueOf(HttpStatus.OK.value()))
