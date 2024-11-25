@@ -1,5 +1,6 @@
 package com.example.anonymous_board.reply.service;
 
+import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.post.db.PostRepository;
 import com.example.anonymous_board.reply.db.ReplyEntity;
 import com.example.anonymous_board.reply.db.ReplyRepository;
@@ -8,6 +9,7 @@ import com.example.anonymous_board.reply.model.ReplyDto;
 import com.example.anonymous_board.reply.model.ReplyRequest;
 import com.example.anonymous_board.reply.model.ReplyUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ public class ReplyService {
     private final PostRepository postRepository;
     private final ReplyConverter replyConverter;
 
-    public ReplyDto create(ReplyRequest replyRequest) {
+    public Api<ReplyDto> create(ReplyRequest replyRequest) {
         var post = postRepository.findById(replyRequest.getPostId())
                 .orElseThrow( () -> {
                     return new RuntimeException("존재하지 않는 글번호 입니다.");
@@ -31,10 +33,15 @@ public class ReplyService {
                 .repliedAt(LocalDateTime.now())
                 .post(post)
                 .build();
-        return replyConverter.toDto(replyRepository.save(entity));
+        var dto = replyConverter.toDto(replyRepository.save(entity));
+        return Api.<ReplyDto>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(dto)
+                .build();
     }
 
-    public ReplyDto update(ReplyUpdate replyUpdate) {
+    public Api<ReplyDto> update(ReplyUpdate replyUpdate) {
         // 댓글 및 비밀번호 확인
         var entity = replyRepository.findById(replyUpdate.getReplyId())
                 .map( it -> {
@@ -51,10 +58,15 @@ public class ReplyService {
         }
         entity.setContent(replyUpdate.getContent());
         entity.setRepliedAt(LocalDateTime.now());
-        return replyConverter.toDto(replyRepository.save(entity));
+        var dto = replyConverter.toDto(replyRepository.save(entity));
+        return Api.<ReplyDto>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(dto)
+                .build();
     }
 
-    public void delete(ReplyDelete replyDelete) {
+    public Api<String> delete(ReplyDelete replyDelete) {
         var entity = replyRepository.findById(replyDelete.getReplyId())
                 .map( it -> {
                     if(!it.getPassword().equals(replyDelete.getPassword())){
@@ -66,5 +78,10 @@ public class ReplyService {
                 .orElseThrow( () -> {
                     return new RuntimeException("존재하지 않는 댓글 번호 입니다.");
                 });
+        return Api.<String>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(replyDelete.getReplyId()+"번째 댓글이 삭제되었습니다.")
+                .build();
     }
 }

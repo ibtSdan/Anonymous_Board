@@ -1,5 +1,6 @@
 package com.example.anonymous_board.reply.controller;
 
+import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.reply.model.ReplyDelete;
 import com.example.anonymous_board.reply.model.ReplyDto;
 import com.example.anonymous_board.reply.model.ReplyRequest;
@@ -18,7 +19,7 @@ public class ReplyApiController {
 
     // 생성
     @PostMapping("/create")
-    public ReplyDto create(@Valid @RequestBody ReplyRequest replyRequest){
+    public Api<ReplyDto> create(@Valid @RequestBody ReplyRequest replyRequest){
         return replyService.create(replyRequest);
     }
 
@@ -26,14 +27,14 @@ public class ReplyApiController {
 
     // 수정
     @PostMapping("/update")
-    public ReplyDto update(@Valid @RequestBody ReplyUpdate replyUpdate){
+    public Api<ReplyDto> update(@Valid @RequestBody ReplyUpdate replyUpdate){
         return replyService.update(replyUpdate);
     }
 
     // 삭제
     @PostMapping("/delete")
-    public void delete(@Valid @RequestBody ReplyDelete replyDelete){
-        replyService.delete(replyDelete);
+    public Api<String> delete(@Valid @RequestBody ReplyDelete replyDelete){
+        return replyService.delete(replyDelete);
     }
 
 }
