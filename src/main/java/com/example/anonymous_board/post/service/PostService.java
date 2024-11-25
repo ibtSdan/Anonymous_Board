@@ -1,5 +1,6 @@
 package com.example.anonymous_board.post.service;
 
+import com.example.anonymous_board.post.common.Api;
 import com.example.anonymous_board.post.common.ApiPagination;
 import com.example.anonymous_board.post.common.Pagination;
 import com.example.anonymous_board.post.db.PostEntity;
@@ -10,6 +11,7 @@ import com.example.anonymous_board.post.model.PostRequest;
 import com.example.anonymous_board.post.model.PostUpdate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ public class PostService {
     private final PostConverter postConverter;
 
 
-    public PostDto create(PostRequest postRequest) {
+    public Api<PostDto> create(PostRequest postRequest) {
         var entity = PostEntity.builder()
                 .userName(postRequest.getUserName())
                 .password(postRequest.getPassword())
@@ -31,19 +33,28 @@ public class PostService {
                 .content(postRequest.getContent())
                 .postedAt(LocalDateTime.now())
                 .build();
-        var saveEntity = postRepository.save(entity);
-        return postConverter.toDto(saveEntity);
+        var dto = postConverter.toDto(postRepository.save(entity));
+        return Api.<PostDto>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(dto)
+                .build();
     }
 
-    public PostDto view(Long id) {
+    public Api<PostDto> view(Long id) {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> {
                     return new RuntimeException("해당 글이 존재하지 않습니다.");
                 });
-        return postConverter.toDto(postEntity);
+        var dto = postConverter.toDto(postEntity);
+        return Api.<PostDto>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(dto)
+                .build();
     }
 
-    public ApiPagination<List<PostDto>> all(Pageable pageable) {
+    public Api<ApiPagination<List<PostDto>>> all(Pageable pageable) {
         var list = postRepository.findAll(pageable);
         var pagination = Pagination.builder()
                 .page(list.getNumber())
@@ -52,15 +63,20 @@ public class PostService {
                 .totalPage(list.getTotalPages())
                 .totalElements(list.getTotalElements())
                 .build();
-        return ApiPagination.<List<PostDto>>builder()
+        var apiPage = ApiPagination.<List<PostDto>>builder()
                 .body(list.toList().stream()
                         .map(postConverter::toDto).toList())
                 .pagination(pagination)
                 .build();
+        return Api.<ApiPagination<List<PostDto>>>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(apiPage)
+                .build();
     }
 
 
-    public PostDto update(PostUpdate postUpdate) {
+    public Api<PostDto> update(PostUpdate postUpdate) {
         // 비밀번호 확인 및 게시글 존재 확인
         var entity =postRepository.findById(postUpdate.getId())
                 .map( it -> {
@@ -80,11 +96,16 @@ public class PostService {
         entity.setTitle(postUpdate.getTitle());
         entity.setContent(postUpdate.getContent());
         entity.setPostedAt(LocalDateTime.now());
-        var newPost = postRepository.save(entity);
-        return postConverter.toDto(newPost);
+        var dto = postConverter.toDto(postRepository.save(entity));
+
+        return Api.<PostDto>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(dto)
+                .build();
     }
 
-    public void delete(PostDelete postDelete) {
+    public Api<String> delete(PostDelete postDelete) {
         postRepository.findById(postDelete.getId())
                 .map( it -> {
                     if(!it.getPassword().equals(postDelete.getPassword())){
@@ -95,5 +116,10 @@ public class PostService {
                 }).orElseThrow( () -> {
                     return new RuntimeException("해당 게시글이 존재하지 않습니다.");
                 });
+        return Api.<String>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.getReasonPhrase())
+                .data(postDelete.getId()+ "번째 글이 삭제 되었습니다.")
+                .build();
     }
 }
